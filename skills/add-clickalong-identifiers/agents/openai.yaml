@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Clickalong Identifiers"
+  short_description: "Add stable IDs for reliable product tours"
+  default_prompt: "Use $add-clickalong-identifiers to add and validate stable tour target IDs for this user journey."

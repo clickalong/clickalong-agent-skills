@@ -161,6 +161,12 @@ Record the real journey with the current unpacked extension. For every retained 
 - Retake succeeds when deliberately requested; and
 - Check & Save refuses to publish after any required visual is removed or failed.
 
+The reliability-first recorder may hold the first click while it captures and checks a clean
+pre-action frame. Wait for “Visual captured,” then click the same control again to perform the real
+trusted action. Do not bypass that gate with a synthetic click or weaken it to make recording feel
+faster; the separation is what prevents a modal, navigation, or synchronous rerender from becoming
+the saved “before” image.
+
 Then run the saved tour once with the target visible and once in a controlled state where it is
 hidden or absent. The first run must spotlight the live element. The second must show the labeled
 recorded example without claiming it is a live location.

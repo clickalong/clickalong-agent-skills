@@ -38,6 +38,31 @@ The recorder can prove that the attribute matched exactly one clicked element in
 
 Do not author `data-clickalong-id`, raw `id="clickalong-*"`, generated CSS classes, DOM-position selectors, or record-specific test IDs as the tour contract.
 
+## Treat the identifier and visual as separate reliability contracts
+
+A screenshot does not make a bad selector safe. The identifier answers “which live element may
+Clickalong spotlight and observe?” The recorded crop answers “what did that control look like when
+the operator recorded this step?”
+
+Require both for every retained action:
+
+- one source-literal, unique, production-preserved `data-testid` for live interaction; and
+- one reviewed target-centred screenshot with the recorded target ring visible.
+
+If the live target is missing, hidden, zero-size, ambiguous, or unavailable in the visitor's current
+state, Clickalong may show the crop as historical guidance. It must not project the old rectangle
+onto the current page or use screenshot coordinates to click. Do not approve a known structural,
+record-specific, or generated selector merely because the crop looks correct.
+
+During recorder Review, inspect the full crop. It must show the intended pre-action state, include
+enough surrounding UI for orientation, exclude recorder-owned controls, and place the ring on the
+actual action owner. Retake a missing, contaminated, clipped, or post-action image before Save.
+
+Apply the same naming contract to tour-targeted Clickalong-owned UI in `apps/web` and to any
+recordable application surface shipped by the organization. Chrome side-panel UI is outside the
+visitor page and cannot be targeted by a website tour; its test IDs are useful for extension tests,
+not as cross-document tour selectors.
+
 ## Follow the workflow
 
 ### 1. Establish the target inventory
@@ -126,6 +151,20 @@ Test applicable roles, permissions, feature flags, empty/data-rich states, and l
 
 Run focused tests, formatter, typecheck, production build, and relevant E2E checks. Verify built markup retains the attribute. Do not claim success from source inspection alone.
 
+### 8. Verify recorder evidence
+
+Record the real journey with the current unpacked extension. For every retained action, require:
+
+- the recorder reports the `data-testid` target as unique and portable;
+- Review shows a ready crop rather than pending/failed state;
+- the expanded crop depicts the page before the action changed it;
+- Retake succeeds when deliberately requested; and
+- Check & Save refuses to publish after any required visual is removed or failed.
+
+Then run the saved tour once with the target visible and once in a controlled state where it is
+hidden or absent. The first run must spotlight the live element. The second must show the labeled
+recorded example without claiming it is a live location.
+
 ## Handle boundaries explicitly
 
 - Responsive copies: do not render two simultaneous copies with the same test ID. Prefer conditional rendering.
@@ -141,7 +180,7 @@ Report limitations instead of hiding them with a selector that works in one deve
 
 Summarize:
 
-| Action | data-testid | Source | Verified states |
-| --- | --- | --- | --- |
+| Action | data-testid | Source | Verified states | Visual reviewed |
+| --- | --- | --- | --- | --- |
 
 Then list checks run and unresolved timing, role, responsive, iframe, shadow-DOM, or virtualized-content constraints.

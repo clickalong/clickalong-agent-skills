@@ -1,19 +1,19 @@
 # Clickalong Agent Skills
 
-Open Agent Skills for making [Clickalong](https://clickalong.ai) guided tours reliable across UI refactors.
+Open Agent Skills for making [Clickalong](https://clickalong.ai) guided tours reliable across accounts and UI refactors.
 
 ## Install
 
 Install the skill into the current project and choose your coding agent when prompted:
 
 ```bash
-npx skills add profitonium-apps/clickalong-agent-skills --skill add-clickalong-identifiers
+npx skills add clickalong/clickalong-agent-skills --skill add-clickalong-identifiers
 ```
 
 Install it globally for every supported agent:
 
 ```bash
-npx skills add profitonium-apps/clickalong-agent-skills \
+npx skills add clickalong/clickalong-agent-skills \
   --skill add-clickalong-identifiers \
   --agent '*' \
   --global \
@@ -28,35 +28,35 @@ Ask your agent:
 
 > Use `$add-clickalong-identifiers` to add reliable tour targets for our onboarding flow.
 
-Or provide an existing Clickalong flow or recorder export:
+Or provide an existing Clickalong flow/recorder export:
 
-> Use `$add-clickalong-identifiers` to replace the fragile selectors in this flow and verify every target in the production build.
+> Use `$add-clickalong-identifiers` to replace the fragile or account-specific targets in this flow and verify every target in the production build.
 
 The skill makes the agent:
 
-1. Identify the actual elements in a concrete tour journey.
-2. Add stable, semantic IDs to the real interactive DOM nodes.
-3. Detect duplicates, generated IDs, component-prop forwarding failures, and responsive copies.
-4. Verify uniqueness and visibility in the rendered app.
-5. Return a durable action-to-selector mapping.
+1. Trace a concrete journey to the actual interactive DOM nodes.
+2. Separate fixed application controls from customer-specific records.
+3. Add stable, unique, production-preserved `data-testid` attributes.
+4. Detect duplicates, interpolation, Shopify/record IDs, prop-forwarding failures, responsive copies, and stripped production attributes.
+5. Verify uniqueness, visibility, and behavior in the rendered workflow.
 
-## Identifier contract
+## Target contract
 
-New tour targets use production-stable HTML IDs:
+New tour targets use the familiar `data-testid` attribute with a Clickalong-namespaced, semantic value:
 
 ```tsx
-<button id="clickalong-settings-invite-member">
+<button data-testid="clickalong-settings-invite-member">
   Invite member
 </button>
 ```
 
 ```css
-#clickalong-settings-invite-member
+[data-testid="clickalong-settings-invite-member"]
 ```
 
-IDs are lowercase, semantic, globally unique, and independent of copy, layout, database records, array indexes, hashes, and framework-generated values. Stable IDs are deliberately used for the first version because current and cached Clickalong recorders already prioritize them.
+Values remain identical across customers and releases. They never include database records, Shopify GIDs, array indexes, translated copy, timestamps, hashes, or generated framework values. Repeated customer-data rows are not made “portable” by appending an ID; tours target a stable picker/container or ask the visitor to choose their own item.
 
-The bundled zero-dependency scanner validates literal `clickalong-*` IDs. Runtime browser verification is still required because static analysis cannot prove how many times a reusable component renders.
+The bundled zero-dependency scanner validates literal `clickalong-*` `data-testid` declarations. Runtime verification remains mandatory because static analysis cannot prove component multiplicity, visibility, or production attribute retention.
 
 ## License
 

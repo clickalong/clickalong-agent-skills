@@ -16,12 +16,12 @@ async function fixture(files) {
   return root;
 }
 
-test("accepts unique literal IDs in common template forms", async (t) => {
+test("accepts unique literal data-testid values in common template forms", async (t) => {
   const root = await fixture({
     "src/Settings.tsx": `
-      <button id="clickalong-settings-invite-member">Invite</button>
-      <Button id={'clickalong-settings-save-profile'}>Save</Button>
-      <button id={\`clickalong-billing-open-portal\`}>Billing</button>
+      <button data-testid="clickalong-settings-invite-member">Invite</button>
+      <Button data-testid={'clickalong-settings-save-profile'}>Save</Button>
+      <button data-testid={\`clickalong-billing-open-portal\`}>Billing</button>
     `,
   });
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -40,9 +40,9 @@ test("accepts unique literal IDs in common template forms", async (t) => {
 
 test("rejects duplicates and invalid names", async (t) => {
   const root = await fixture({
-    "src/Desktop.tsx": `<button id="clickalong-team-invite">Invite</button>`,
-    "src/Mobile.tsx": `<button id="clickalong-team-invite">Invite</button>`,
-    "src/Profile.vue": `<button id="clickalong-Profile_Save">Save</button>`,
+    "src/Desktop.tsx": `<button data-testid="clickalong-team-invite">Invite</button>`,
+    "src/Mobile.tsx": `<button data-testid="clickalong-team-invite">Invite</button>`,
+    "src/Profile.vue": `<button data-testid="clickalong-Profile_Save">Save</button>`,
   });
   t.after(() => rm(root, { recursive: true, force: true }));
 
@@ -54,8 +54,8 @@ test("rejects duplicates and invalid names", async (t) => {
 test("rejects interpolated and concatenated IDs", async (t) => {
   const root = await fixture({
     "src/Rows.tsx": `
-      <button id={\`clickalong-row-${"${row.id}"}\`}>Open</button>
-      <button id={"clickalong-row-" + index}>Open</button>
+      <button data-testid={\`clickalong-row-${"${row.id}"}\`}>Open</button>
+      <button data-testid={"clickalong-row-" + index}>Open</button>
     `,
   });
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -65,15 +65,15 @@ test("rejects interpolated and concatenated IDs", async (t) => {
 });
 
 test("ignores dependencies, tests, stories, and generated output", async (t) => {
-  const generatedBundle = `<button id="clickalong-home-start-tour">Start</button>${"x".repeat(
+  const generatedBundle = `<button data-testid="clickalong-home-start-tour">Start</button>${"x".repeat(
     31_000
   )}`;
   const root = await fixture({
-    "src/App.tsx": `<button id="clickalong-home-start-tour">Start</button>`,
-    "src/App.test.tsx": `<button id="clickalong-home-start-tour">Start</button>`,
-    "src/App.stories.tsx": `<button id="clickalong-home-start-tour">Start</button>`,
-    "node_modules/pkg/index.js": `<button id="clickalong-home-start-tour">Start</button>`,
-    "dist/app.js": `<button id="clickalong-home-start-tour">Start</button>`,
+    "src/App.tsx": `<button data-testid="clickalong-home-start-tour">Start</button>`,
+    "src/App.test.tsx": `<button data-testid="clickalong-home-start-tour">Start</button>`,
+    "src/App.stories.tsx": `<button data-testid="clickalong-home-start-tour">Start</button>`,
+    "node_modules/pkg/index.js": `<button data-testid="clickalong-home-start-tour">Start</button>`,
+    "dist/app.js": `<button data-testid="clickalong-home-start-tour">Start</button>`,
     "public/widget.js": generatedBundle,
   });
   t.after(() => rm(root, { recursive: true, force: true }));

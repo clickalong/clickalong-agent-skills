@@ -169,10 +169,11 @@ first activation remains blocked. Wait for **Step secured**, then repeat the exa
 app receives it. An early, different, moved, expired, or failed action is blocked and the recorder
 prepares again.
 
-Pointer and keyboard activation, typing, paste, and drop use this same fail-closed sequence. The
-recorder does not read typed, pasted, or dropped values through form, clipboard, or data-transfer
-APIs, but content already visible on the page—including a visible field value—can appear in the crop
-pixels. Inspect that visible context during Review. Do not bypass the gate with a synthetic action or
+Pointer and keyboard activation, typing, and paste use this same fail-closed sequence. The recorder
+does not read typed or pasted values through form or clipboard APIs. Drag/drop and IME composition
+are refused because Chrome cannot guarantee a repeated trusted action for those modalities. Content
+already visible on the page—including a visible field value—can appear in the crop pixels. Inspect
+that visible context during Review. Do not bypass the gate with a synthetic action or
 weaken it to make recording feel faster; the separation prevents a modal, navigation, or synchronous
 rerender from becoming the saved “before” image.
 

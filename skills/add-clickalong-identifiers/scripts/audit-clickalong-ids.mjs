@@ -79,13 +79,13 @@ function scanSource(file, source) {
   const occurrences = [];
   const dynamic = [];
 
-  const quoted = /\bid\s*=\s*(?:\{\s*)?(["'])(clickalong-[^"']*)\1(?:\s*\})?/g;
+  const quoted = /\bdata-testid\s*=\s*(?:\{\s*)?(["'])(clickalong-[^"']*)\1(?:\s*\})?/g;
   for (const match of source.matchAll(quoted)) {
     if (isCommentOnlyLine(source, match.index)) continue;
     occurrences.push(occurrence(file, source, match.index, match[2]));
   }
 
-  const template = /\bid\s*=\s*\{\s*`(clickalong-[^`]*)`\s*\}/g;
+  const template = /\bdata-testid\s*=\s*\{\s*`(clickalong-[^`]*)`\s*\}/g;
   const templateRanges = [];
   for (const match of source.matchAll(template)) {
     if (isCommentOnlyLine(source, match.index)) continue;
@@ -97,14 +97,14 @@ function scanSource(file, source) {
         file,
         line,
         column,
-        message: "Clickalong IDs must be literal; remove template interpolation.",
+        message: "Clickalong data-testid values must be literal; remove template interpolation.",
       });
     } else {
       occurrences.push(occurrence(file, source, match.index, match[1]));
     }
   }
 
-  const expression = /\bid\s*=\s*\{([^}\n]+)\}/g;
+  const expression = /\bdata-testid\s*=\s*\{([^}\n]+)\}/g;
   for (const match of source.matchAll(expression)) {
     if (!match[1].includes("clickalong-") || isCommentOnlyLine(source, match.index)) continue;
     const coveredByTemplate = templateRanges.some(
@@ -118,7 +118,7 @@ function scanSource(file, source) {
       file,
       line,
       column,
-      message: "Clickalong IDs must be literal; remove variables or concatenation.",
+      message: "Clickalong data-testid values must be literal; remove variables or concatenation.",
     });
   }
 
@@ -205,7 +205,7 @@ export async function auditClickalongIds(rootPath = ".") {
         type: "invalid",
         ...item,
         message:
-          `Invalid ID "${item.id}"; expected lowercase kebab-case ` +
+          `Invalid data-testid "${item.id}"; expected lowercase kebab-case ` +
           `matching ${VALID_ID} and at most ${MAX_ID_LENGTH} characters.`,
       });
     }
@@ -223,7 +223,7 @@ export async function auditClickalongIds(rootPath = ".") {
       type: "duplicate",
       id,
       locations: group.map(({ file, line, column }) => ({ file, line, column })),
-      message: `ID "${id}" has ${group.length} literal source declarations.`,
+      message: `data-testid "${id}" has ${group.length} literal source declarations.`,
     });
   }
 
@@ -237,7 +237,7 @@ export async function auditClickalongIds(rootPath = ".") {
   if (occurrences.length === 0) {
     warnings.push({
       type: "no-identifiers",
-      message: "No literal clickalong-* IDs were found in scanned source files.",
+      message: "No literal clickalong-* data-testid values were found in scanned source files.",
     });
   }
 
@@ -255,8 +255,8 @@ function formatLocation(item) {
 }
 
 function printHuman(result) {
-  console.log(`Clickalong ID audit: ${result.root}`);
-  console.log(`Scanned ${result.filesScanned} source files; found ${result.occurrences.length} IDs.`);
+  console.log(`Clickalong data-testid audit: ${result.root}`);
+  console.log(`Scanned ${result.filesScanned} source files; found ${result.occurrences.length} tour targets.`);
 
   for (const item of result.occurrences) {
     console.log(`  ${item.id}  ${formatLocation(item)}`);
@@ -279,7 +279,7 @@ function printHuman(result) {
 function printHelp() {
   console.log(`Usage: node audit-clickalong-ids.mjs [repository-root] [--json]
 
-Validate literal clickalong-* HTML IDs in web source files. Generated output,
+Validate literal clickalong-* data-testid values in web source files. Generated output,
 dependencies, tests, stories, and fixtures are ignored.`);
 }
 

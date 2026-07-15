@@ -161,11 +161,20 @@ Record the real journey with the current unpacked extension. For every retained 
 - Retake succeeds when deliberately requested; and
 - Check & Save refuses to publish after any required visual is removed or failed.
 
-The reliability-first recorder may hold the first click while it captures and checks a clean
-pre-action frame. Wait for “Visual captured,” then click the same control again to perform the real
-trusted action. Do not bypass that gate with a synthetic click or weaken it to make recording feel
-faster; the separation is what prevents a modal, navigation, or synchronous rerender from becoming
-the saved “before” image.
+Hover over a click target or focus a typing field to prepare its clean pre-action frame. Wait for
+**Visual ready**; that state means Clickalong has checked the pixels, exact target, geometry,
+visibility, occlusion, and before/after stability and has durably checkpointed the crop in trusted
+local extension storage. Perform the exact activation once to durably bind the visual and step. That
+first activation remains blocked. Wait for **Step secured**, then repeat the exact activation so the
+app receives it. An early, different, moved, expired, or failed action is blocked and the recorder
+prepares again.
+
+Pointer and keyboard activation, typing, paste, and drop use this same fail-closed sequence. The
+recorder does not read typed, pasted, or dropped values through form, clipboard, or data-transfer
+APIs, but content already visible on the page—including a visible field value—can appear in the crop
+pixels. Inspect that visible context during Review. Do not bypass the gate with a synthetic action or
+weaken it to make recording feel faster; the separation prevents a modal, navigation, or synchronous
+rerender from becoming the saved “before” image.
 
 Then run the saved tour once with the target visible and once in a controlled state where it is
 hidden or absent. The first run must spotlight the live element. The second must show the labeled

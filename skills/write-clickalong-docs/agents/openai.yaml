@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Clickalong Docs"
+  short_description: "Write leak-safe, tour-ready step-by-step help docs for a Clickalong workspace"
+  default_prompt: "Use $write-clickalong-docs to research this product's user-facing features and draft step-by-step end-user help documentation for our Clickalong workspace."

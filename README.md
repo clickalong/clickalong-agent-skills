@@ -1,28 +1,29 @@
 # Clickalong Agent Skills
 
-Open Agent Skills for making [Clickalong](https://clickalong.ai) guided tours reliable across accounts and UI refactors.
+Open Agent Skills for [Clickalong](https://clickalong.ai) customers:
+
+| Skill | Job |
+| --- | --- |
+| `add-clickalong-identifiers` | Make guided tours reliable across accounts and UI refactors with durable `data-testid` targets. |
+| `write-clickalong-docs` | Research your product's user-facing features in its own codebase and write leak-safe, tour-ready step-by-step help docs for your Clickalong workspace. |
 
 ## Install
 
-Install the skill into the current project and choose your coding agent when prompted:
+Install a skill into the current project and choose your coding agent when prompted:
 
 ```bash
 npx skills add clickalong/clickalong-agent-skills --skill add-clickalong-identifiers
 ```
 
-Install it globally for every supported agent:
-
 ```bash
-npx skills add clickalong/clickalong-agent-skills \
-  --skill add-clickalong-identifiers \
-  --agent '*' \
-  --global \
-  --yes
+npx skills add clickalong/clickalong-agent-skills --skill write-clickalong-docs
 ```
+
+Install globally for every supported agent by adding `--agent '*' --global --yes`.
 
 The open [Agent Skills format](https://agentskills.io/specification) works with Codex, Claude Code, Cursor, GitHub Copilot, and other compatible coding agents. The installer is the open-source [skills CLI](https://github.com/vercel-labs/skills).
 
-## Use
+## add-clickalong-identifiers
 
 Ask your agent:
 
@@ -57,6 +58,24 @@ New tour targets use the familiar `data-testid` attribute with a Clickalong-name
 Values remain identical across customers and releases. They never include database records, Shopify GIDs, array indexes, translated copy, timestamps, hashes, or generated framework values. Repeated customer-data rows are not made “portable” by appending an ID; tours target a stable picker/container or ask the visitor to choose their own item.
 
 The bundled zero-dependency scanner validates literal `clickalong-*` `data-testid` declarations. Runtime verification remains mandatory because static analysis cannot prove component multiplicity, visibility, or production attribute retention.
+
+## write-clickalong-docs
+
+Ask your agent:
+
+> Use `$write-clickalong-docs` to write help guides for our main features and get them into our Clickalong workspace.
+
+The skill makes the agent:
+
+1. Propose a topic list from your product's user-facing surface and get it approved.
+2. Research each topic from the UI only — exact labels, flows, and on-screen limits — never from secrets, infrastructure, or admin code.
+3. Draft reviewable markdown into a local `clickalong-docs/` bundle in Clickalong's help-center grammar, with every task written as tour-ready numbered steps: one screen action per step, the exact control in bold, the observable result folded in, no nesting, at most 25 steps.
+4. Run two bundled zero-dependency gates: a safety scanner that blocks credential shapes, URLs with embedded credentials, and secret-valued assignments (warning on internal endpoints, local paths, admin URLs, non-example emails, and high-entropy strings), and a step audit that fails task docs without numbered steps and flags compound, vague, unlabeled, nested, or over-long steps.
+5. Hand the finished bundle to you for review, then help publish it through the Clickalong dashboard, verify the AI assistant answers task questions as numbered steps from the new docs, and list which docs to record as guided tours next.
+
+Steps matter beyond reading: Clickalong's assistant quotes them in chat, live assistance falls back from a recorded tour to an ordered public document, and operators record tours by following the doc as the script — so this skill pairs naturally with `add-clickalong-identifiers` for durable tour targets.
+
+The skill runs inside your proprietary codebase, so its security boundary is explicit: the agent never opens secret-bearing files, every example value is fake, nothing publishes without your approval, and the safety scanner is a blocking gate — its error reports are redacted so even the findings can't leak the secret they found.
 
 ## License
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Add Clickalong Identifiers"
-  short_description: "Add durable data-testid tour contracts"
-  default_prompt: "Use $add-clickalong-identifiers to add and verify production-stable data-testid targets for this user journey."
+  short_description: "Durable tour targets + AI-guide legibility"
+  default_prompt: "Use $add-clickalong-identifiers to add and verify production-stable data-testid targets for this user journey and make its controls legible to Clickalong's AI assist guide (accessible names, navigation opt-ins, privacy opt-outs)."

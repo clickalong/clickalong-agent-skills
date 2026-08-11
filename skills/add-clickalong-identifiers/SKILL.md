@@ -1,6 +1,6 @@
 ---
 name: add-clickalong-identifiers
-description: Add, audit, and verify production-stable data-testid contracts for Clickalong guided-tour targets. Use when instrumenting a web app for Clickalong tours, replacing fragile CSS/nth-of-type/generated-ID selectors, fixing account-specific Shopify GID or record selectors, hardening a walkthrough across tenants and redesigns, or reviewing tour targets in React, Vue, Svelte, Angular, Astro, or plain HTML.
+description: Add, audit, and verify production-stable data-testid contracts for Clickalong guided-tour targets, and make the app legible to Clickalong's AI assist guide. Use when instrumenting a web app for Clickalong tours, replacing fragile CSS/nth-of-type/generated-ID selectors, fixing account-specific Shopify GID or record selectors, hardening a walkthrough across tenants and redesigns, reviewing tour targets in React, Vue, Svelte, Angular, Astro, or plain HTML, or when the AI guide fails to highlight controls — fixing accessible names and labels, deduplicating control names, opting reversible navigation in with data-clickalong-action, excluding sensitive regions with data-clickalong-private, or declaring credential fields with autocomplete.
 ---
 
 # Add Clickalong Identifiers
@@ -63,6 +63,32 @@ recordable application surface shipped by the organization. Chrome side-panel UI
 visitor page and cannot be targeted by a website tour; its test IDs are useful for extension tests,
 not as cross-document tour selectors.
 
+## Make the app legible to the AI assist guide
+
+The `data-testid` contract serves recorded tours. Clickalong's AI guide (Live
+Assistance) never reads `data-testid` — it resolves controls by accessible name,
+role, and safety classification, and it fails closed on missing or ambiguous
+names. Instrument both contracts together; the full semantic contract with
+verification steps is in [assist semantics](references/assist-semantics.md).
+
+- Give every interactive control an accessible name equal to its visible label
+  (real label association or `aria-label`; a placeholder must never be the only
+  name, and an empty `label=""` prop with the caption as sibling text is a
+  defect).
+- Keep names unique per rendered view; add context to repeated controls
+  (`aria-label="Edit shipping address"`).
+- Mark reversible custom navigation with `data-clickalong-action="navigation"`
+  — the only recognized value, inert on form fields and submit buttons (a
+  `<button>` without an explicit `type="button"` IS a submit button), and it
+  grants click authority in do-it-for-me mode, so reversible navigation only.
+- Exclude sensitive regions with `data-clickalong-private` or
+  `data-clickalong-no-automate`; keep hidden responsive/nav mirrors
+  `aria-hidden` so they cannot create duplicate names.
+- Declare credential/card/OTP fields with truthful `autocomplete` tokens;
+  password, file, and hidden inputs are never spotlighted.
+- Disabled controls are invisible to the AI until they enable — keep their
+  names stable rather than faking enablement.
+
 ## Follow the workflow
 
 ### 1. Establish the target inventory
@@ -119,11 +145,12 @@ Resolve `<skill-root>` as this skill directory, then run:
 
 ```bash
 node <skill-root>/scripts/audit-clickalong-ids.mjs <repository-root>
+node <skill-root>/scripts/audit-clickalong-semantics.mjs <repository-root>
 ```
 
-Add `--json` for machine-readable output. Fix invalid values, interpolation, and duplicate literal declarations.
+Add `--json` for machine-readable output. Fix invalid values, interpolation, and duplicate literal declarations from the ids audit; fix misused `data-clickalong-action` values and placements from the semantics audit, and review its warnings about placeholder-named fields and password inputs without `autocomplete`.
 
-The audit ignores generated output, dependencies, tests, stories, and fixtures. It cannot prove that a reusable component renders once; runtime verification remains mandatory.
+Both audits ignore generated output, dependencies, tests, stories, and fixtures. The semantics audit reads literal static markup only — dynamic framework bindings (Vue `:attr`, Angular `[attr.…]`, spread props) are skipped, not judged. Neither audit can prove that a reusable component renders once or compute a rendered accessible name; runtime verification remains mandatory.
 
 ### 6. Verify the rendered production contract
 
@@ -144,6 +171,8 @@ const target = matches[0];
 ```
 
 Require `count: 1`, `connected: true`, and `visible: true`. Verify after the relevant rerender, route transition, menu/modal opening, data load, and supported responsive breakpoint. Click it and confirm the real action still occurs.
+
+For controls the AI guide should target, also verify the rendered accessible name equals the visible label with exactly one match, using the snippet in [assist semantics](references/assist-semantics.md).
 
 Test applicable roles, permissions, feature flags, empty/data-rich states, and localization. A stable attribute cannot repair an impossible prerequisite or a control that never renders.
 
@@ -186,8 +215,8 @@ recorded example without claiming it is a live location.
 - Responsive copies: do not render two simultaneous copies with the same test ID. Prefer conditional rendering.
 - Repeated/virtualized rows: target a singleton control or change tour intent; never append record IDs or indexes.
 - Portals/modals: same-document portals work when the step prerequisite opens them.
-- Shadow DOM: Clickalong cannot query inside a shadow root. Target a meaningful host or redesign the step.
-- Iframes: the widget and target must be in the same document.
+- Shadow DOM: recorded selectors cannot address nodes inside a shadow root. Target the host element — playback can spotlight a unique interactive control inside its open shadow root; closed roots are opaque. The AI guide indexes open shadow roots directly.
+- Iframes: recorded tours can target same-origin iframes one frame level deep; the AI guide scans same-origin frames a few levels deeper. Cross-origin frames are unreachable for both.
 - Full navigation: a stable target does not itself preserve an active tour across a document reload.
 
 Report limitations instead of hiding them with a selector that works in one development state.

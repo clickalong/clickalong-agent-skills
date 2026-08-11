@@ -4,7 +4,7 @@ Open Agent Skills for [Clickalong](https://clickalong.ai) customers:
 
 | Skill | Job |
 | --- | --- |
-| `add-clickalong-identifiers` | Make guided tours reliable across accounts and UI refactors with durable `data-testid` targets. |
+| `add-clickalong-identifiers` | Make guided tours reliable across accounts and UI refactors with durable `data-testid` targets, and make the app legible to the AI assist guide with real accessible names, navigation opt-ins, and privacy opt-outs. |
 | `write-clickalong-docs` | Research your product's user-facing features in its own codebase and write leak-safe, tour-ready step-by-step help docs for your Clickalong workspace. |
 
 ## Install
@@ -40,6 +40,7 @@ The skill makes the agent:
 3. Add stable, unique, production-preserved `data-testid` attributes.
 4. Detect duplicates, interpolation, Shopify/record IDs, prop-forwarding failures, responsive copies, and stripped production attributes.
 5. Verify uniqueness, visibility, and behavior in the rendered workflow.
+6. Apply the AI-assist semantic contract: accessible names that equal visible labels, unique names per view, `data-clickalong-action="navigation"` opt-ins on reversible custom navigation, `data-clickalong-private` exclusions for sensitive regions, and truthful `autocomplete` on credential fields.
 
 ## Target contract
 
@@ -58,6 +59,8 @@ New tour targets use the familiar `data-testid` attribute with a Clickalong-name
 Values remain identical across customers and releases. They never include database records, Shopify GIDs, array indexes, translated copy, timestamps, hashes, or generated framework values. Repeated customer-data rows are not made “portable” by appending an ID; tours target a stable picker/container or ask the visitor to choose their own item.
 
 The bundled zero-dependency scanner validates literal `clickalong-*` `data-testid` declarations. Runtime verification remains mandatory because static analysis cannot prove component multiplicity, visibility, or production attribute retention.
+
+Recorded tours are one of two targeting systems. Clickalong's AI assist guide never reads `data-testid` — it resolves controls by accessible name, role, and safety classification, and it fails closed on missing or ambiguous names. The skill therefore also carries the semantic contract (accessible names, name uniqueness, navigation opt-ins, privacy opt-outs, `autocomplete` fencing) with a second zero-dependency scanner that errors on misused `data-clickalong-action` markup and warns on placeholder-named fields and password inputs without `autocomplete`.
 
 ## write-clickalong-docs
 

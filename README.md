@@ -6,6 +6,7 @@ Open Agent Skills for [Clickalong](https://clickalong.ai) customers:
 | --- | --- |
 | `add-clickalong-identifiers` | Make guided tours reliable across accounts and UI refactors with durable `data-testid` targets, and make the app legible to the AI assist guide with real accessible names, navigation opt-ins, and privacy opt-outs. |
 | `write-clickalong-docs` | Research your product's user-facing features in its own codebase and write leak-safe, tour-ready step-by-step help docs for your Clickalong workspace. |
+| `generate-clickalong-tours` | Author interactive guided tours from inside your codebase and publish them to your workspace through the authenticated Agent API — no Chrome recorder needed. |
 
 ## Install
 
@@ -17,6 +18,10 @@ npx skills add clickalong/clickalong-agent-skills --skill add-clickalong-identif
 
 ```bash
 npx skills add clickalong/clickalong-agent-skills --skill write-clickalong-docs
+```
+
+```bash
+npx skills add clickalong/clickalong-agent-skills --skill generate-clickalong-tours
 ```
 
 Install globally for every supported agent by adding `--agent '*' --global --yes`.
@@ -79,6 +84,25 @@ The skill makes the agent:
 Steps matter beyond reading: Clickalong's assistant quotes them in chat, live assistance falls back from a recorded tour to an ordered public document, and operators record tours by following the doc as the script — so this skill pairs naturally with `add-clickalong-identifiers` for durable tour targets.
 
 The skill runs inside your proprietary codebase, so its security boundary is explicit: the agent never opens secret-bearing files, every example value is fake, nothing publishes without your approval, and the safety scanner is a blocking gate — its error reports are redacted so even the findings can't leak the secret they found.
+
+## generate-clickalong-tours
+
+Ask your agent:
+
+> Use `$generate-clickalong-tours` to build guided tours for our core flows and publish them to our Clickalong workspace.
+
+One-time setup: generate a workspace token in **Clickalong → Settings → Coding agent API token** and keep it outside the repository (a file like `~/.config/clickalong/agent-token`, or your secret manager). The agent passes it per-invocation to the skill's own scripts only — never exported into the general shell, where any build or package hook could read it. The token is the security boundary — it resolves server-side to exactly one workspace, so nothing the agent sends can land in another tenant, and revoking it in Settings kills it instantly, including requests already in flight.
+
+The skill makes the agent:
+
+1. Verify the token, fetch the workspace it belongs to, and get your explicit confirmation of the workspace **name and id** — every write is pinned to that id with `--apply --expect-workspace` and aborts on any mismatch.
+2. Propose a tour list from your product's core jobs and get it approved.
+3. Make every step target production-stable (pairing with `add-clickalong-identifiers`), adding `data-testid` hooks to your code where none exist.
+4. Draft one reviewable JSON file per tour into a local `clickalong-tours/` bundle — portable start paths, explicit manual-advance steps, copy that quotes your real on-screen labels.
+5. Run the bundled zero-dependency validator (blocking, and re-run inside the push itself): API shape caps, non-portable or record-shaped paths and selectors, secret-shaped copy — with findings that never quote the offending value — plus duplicate names and ids.
+6. After your approval, push through the Agent API (`/api/agent/tours`) with a token-redacting, origin-allowlisted script: creates use locally minted idempotency ids, updates send the last-pushed version so a concurrent dashboard edit surfaces as a conflict, and ids/versions are written back atomically — then hand you the dashboard link for final review.
+
+Tours published this way are offered by the AI assistant within minutes and play through the same widget runtime as recorded tours; they carry no recorded screenshots, so a missing target falls back to AI tutor guidance instead of the recorded image (re-record high-traffic tours in replace mode to add visuals). Tours recorded with the Chrome extension — and tours predating the API — are refused for update and delete server-side.
 
 ## License
 

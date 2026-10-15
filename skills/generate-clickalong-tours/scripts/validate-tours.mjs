@@ -298,10 +298,10 @@ export async function validateTours(folder) {
             err(name, `${label}.annotation must be a string ≤200 chars`);
           } else checkCopy(name, `${label}.annotation`, step.annotation);
         }
-        // Explicit by contract: the server default is "click", authored tours
-        // almost always want "manual", and silence has caused wedged runs.
+        // Explicit by contract: the server defaults an omitted value to
+        // "click", and the right value depends on what the step asks for.
         if (step.advanceOn === undefined) {
-          err(name, `${label}.advanceOn is required — set "manual" (recommended) or "click" deliberately`);
+          err(name, `${label}.advanceOn is required — "click" when the step asks the visitor to click the control, "manual" for fields and look-only steps`);
         } else if (!["click", "manual"].includes(step.advanceOn)) {
           err(name, `${label}.advanceOn must be "click" or "manual"`);
         }

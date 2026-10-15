@@ -16,7 +16,15 @@ What separates a tour people finish from one they abandon.
 
 ## Steps
 
-- **Anchor on the primary control, advance manually.** `advanceOn: "manual"` means the tooltip's Next button advances and the target stays clickable — a disabled button, an already-configured toggle, or a cautious visitor can never wedge the run. Use `"click"` only when clicking the target is exactly what the step asks and the control is never disabled.
+- **Anchor on the primary control; advance on click when the step is a click.** Visitors expect the tour to move on when they click where the indicator points. `advanceOn: "click"` does that: the tooltip says "Click the highlighted element to continue" and shows a **Skip** button, and a disabled target swaps Skip for a primary **Next** button, so the run cannot wedge. Use it for tabs, buttons, links, expand controls, and toggles the step asks the visitor to turn on. `advanceOn: "manual"` waits for the tooltip's **Next** button; use it for:
+  - text fields, search fields and dropdowns (the visitor types or picks first);
+  - look-only steps that point at an area or explain a setting the visitor should not change just to finish the tour;
+  - one example among several options (the first row's checkbox, one of several content types);
+  - controls that are already on by default, where a click would undo them;
+  - steps where the click is only the first of several actions (Add filter, then fill its fields);
+  - clicks that leave the page while the next step is still on this page.
+
+  Match the copy to the choice: a click step never says "press Next". When the control may already be in the wanted state (a disclosure already open, a toggle already on), say "If it is already open, press Skip."
 - **Titles are imperative and short** ("Name your metafield"); descriptions are 1–2 sentences that quote the real on-screen label in **bold** ("Click **Run extraction** when you're ready"). If the label is dynamic ("Classify 12,770 products"), describe its stable part ("the **Classify** button shows how many products will be processed").
 - **Never make a step depend on transient state** (a modal that only opens after another click, a row that needs data). If a control appears only conditionally, either make the preceding step produce it or cut the step and mention it in the neighboring step's description.
 - **Order steps down the page and through the flow** the way a first-time user would actually move.

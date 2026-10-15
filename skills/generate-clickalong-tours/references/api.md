@@ -34,7 +34,7 @@ Rate limits: 120 writes and 600 reads per workspace per hour (best-effort during
       "selector": "[data-testid=\"clickalong-products-export\"]",
       "title": "Open the Export panel",
       "description": "Click **Export** in the top bar.",
-      "advanceOn": "manual",
+      "advanceOn": "click",
       "route": "/products",
       "annotation": "Start here",
       "fallbackLocators": [{ "kind": "role", "role": "button", "name": "Export" }]
@@ -50,7 +50,7 @@ Draft files on disk carry this body plus a local envelope the push script manage
 - `name` 1–200 chars. `description` ≤500 — it seeds the AI's tour matching, so write it like the question users ask.
 - `start` optional. `kind` is `"same-origin"` (normal web app: the widget navigates there before step 1) or `"shopify-app"` (embedded Shopify admin app: the widget navigates the app iframe via App Bridge). `pathname` must be portable — no query, no hash, and no account/record-shaped segments. `shopify-app` starts additionally reject any id or `*` segment outright: begin Shopify tours on a stable tool page, never a record page. Omit `start` entirely for tours that play in place on a page the visitor already opened (record-scoped pages like `/orders/12345`).
 - `audience` optional, UX targeting only (never access control): `pathContains` (≤300 chars) narrows offers to matching page URLs; `attributes` (≤5 pairs; keys `[a-zA-Z0-9_.-]` ≤50, single-line values 1–200) must all match the visitor's `Clickalong.set()` attributes. Validated as a structured record — newlines or `=` tricks in values are rejected, never reinterpreted.
-- `steps` 1–25. Per step: `selector` ≤300 (CSS, must match exactly one element), `title` 1–200, `description` ≤500 (supports `**bold**` / `` `code` `` inline markdown), `annotation` ≤200 (short fading label next to the target), `advanceOn` `"click"` | `"manual"` (the SERVER defaults an omitted value to click, which is why this skill's validator requires it explicitly — authored tours almost always want manual), `route` optional portable pathname of the step's page (requires a declared `start`; powers wrong-page hints; on `shopify-app` tours it must be store-portable like the start), `fallbackLocators` ≤5 ordered alternates (`css` selector, `role`+`name`, or `tag`+`text`) tried when the primary selector misses.
+- `steps` 1–25. Per step: `selector` ≤300 (CSS, must match exactly one element), `title` 1–200, `description` ≤500 (supports `**bold**` / `` `code` `` inline markdown), `annotation` ≤200 (short fading label next to the target), `advanceOn` `"click"` | `"manual"` (the SERVER defaults an omitted value to click, which is why this skill's validator requires it explicitly — `"click"` when the step asks the visitor to click the control, `"manual"` for fields and look-only steps; see authoring.md), `route` optional portable pathname of the step's page (requires a declared `start`; powers wrong-page hints; on `shopify-app` tours it must be store-portable like the start), `fallbackLocators` ≤5 ordered alternates (`css` selector, `role`+`name`, or `tag`+`text`) tried when the primary selector misses.
 - Screenshots cannot be set here — they are recorder-owned. Agent tours simply have none (playback still works; target-miss fallback uses AI guidance instead of the recorded image).
 
 ## Responses

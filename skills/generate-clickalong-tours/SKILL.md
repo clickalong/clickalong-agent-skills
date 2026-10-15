@@ -59,7 +59,7 @@ Each step needs a selector that resolves to **exactly one** element on the step'
 Write one JSON file per tour into `clickalong-tours/` at the repository root. Each file is the API body plus a small local envelope (`id`, `version`) that the push script manages — see [references/api.md](references/api.md) for the exact schema and [references/authoring.md](references/authoring.md) for design rules. The essentials:
 
 - `start.pathname` must be portable (no account-specific segments); tours for pages that only exist per-record get **no `start`** and play in place.
-- **Set `advanceOn` explicitly on every step** — the validator requires it. Use `"manual"` (tooltip advances; a disabled control can never strand the tour) unless clicking the target is the step's essential action and the control is never disabled.
+- **Set `advanceOn` explicitly on every step** — the validator requires it. Use `"click"` when the step asks the visitor to click the highlighted control (a tab, button, link, expand control, or a toggle to turn on): the tour moves on as soon as they click it, and a disabled target shows a primary **Next** button instead, so it cannot strand the tour. Use `"manual"` (the tooltip's **Next** button advances) for text fields and dropdowns, look-only steps, and the other cases in [references/authoring.md](references/authoring.md). A click step's copy never says "press Next"; its button reads **Skip**.
 - Step copy quotes the real on-screen labels, bold in **the control's exact label**.
 - Optional per-step `route` (requires a declared `start`) powers "you're on the wrong page" hints.
 
